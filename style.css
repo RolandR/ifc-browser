@@ -1,0 +1,90 @@
+*{
+	margin: 0px;
+	padding: 0px;
+	border: none;
+}
+
+body{
+	font-family: monospace;
+}
+
+#display{
+	padding: 20px;
+	font-family: monospace;
+	white-space: pre;
+}
+
+p.line{
+	
+}
+
+p.line-data{
+	
+}
+
+p.line-nodata{
+	color: #555;
+}
+
+p:target{
+	background-color: #ffa;
+}
+
+.detailsButtonContainer{
+	display: inline-block;
+	width: 25px;
+	height: 17px;
+}
+
+.detailsButtonContainer>button{
+	height: 20px;
+	width: 20px;
+	margin: 1px 5px 1px 0px;
+	border: 1px #444 solid;
+	background: linear-gradient(180deg, #eee 0%, #ccc 100%);
+	cursor: pointer;
+	position: absolute;
+	display: none;
+}
+
+.detailsButtonContainer>button:hover{
+	background: linear-gradient(180deg, #fff 0%, #ddd 100%);
+}
+
+.detailsButtonContainer>button:active{
+	background: linear-gradient(0deg, #eee 0%, #ccc 100%);
+}
+
+p:hover .detailsButtonContainer>button{
+	display: inline-block;
+}
+
+#detailsOverlay{
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	left: 0px;
+	bottom: 0px;
+	background-color: rgba(0, 0, 0, 0.7);
+	display: none;
+	align-items: center;
+	justify-content: center;
+}
+
+#detailsOverlay.visible{
+	display: flex;
+}
+
+#details{
+	border: 1px #000 solid;
+	background-color: #fff;
+	flex: 1;
+	max-width: 800px;
+	margin: 100px;
+	padding: 20px;
+	font-size: 1.7em;
+}
+
+.parenContents{
+	margin-left: 25px;
+}
