@@ -15,11 +15,13 @@ body{
 }
 
 p.line{
-	
+	line-height: 23px;
 }
 
 p.line-data{
-	
+	background-color: rgba(0, 0, 0, 0.07);
+	margin: 5px 3px 10px 5px;
+	border: 1px rgba(0, 0, 0, 0.2) solid;
 }
 
 p.line-nodata{
@@ -44,7 +46,7 @@ p:target{
 	background: linear-gradient(180deg, #eee 0%, #ccc 100%);
 	cursor: pointer;
 	position: absolute;
-	display: none;
+	display: inline-block;
 }
 
 .detailsButtonContainer>button:hover{
