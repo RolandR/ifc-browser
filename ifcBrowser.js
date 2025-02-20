@@ -96,11 +96,10 @@ fileInput.onchange = function(e){
 	detailsElement.innerHTML = '<h2>#'+id+'</h2>'+entityName+'(<br><div class="parenContents">'+parenContents+'</div>)';
 }*/
 
-function showDetails(id){
-	let lineElement = document.getElementById(id);
+function showDetails(id, container){
 	for(let i in entities[id].dependencies){
 		let lineEl = createLineElement(entities[id].dependencies[i]);
-		lineElement.appendChild(lineEl);
+		container.appendChild(lineEl);
 		
 	}
 }
@@ -108,25 +107,48 @@ function showDetails(id){
 function createLineElement(entityId){
 	let lineEl = document.createElement("p");
 	let lineAnchor = '<a href="#'+entityId+'">#'+entityId+'</a>';
-	line = lineAnchor + "=" + entities[entityId].name;
+	let line = lineAnchor + "=" + entities[entityId].name;
+	let lineContentEl = document.createElement("span");
+	lineContentEl.innerHTML = line;
+	let lineChildrenContainer = document.createElement("div");
+	lineChildrenContainer.className = "entityChildren collapsed";
 	
 	let detailsButtonContainer = document.createElement("div");
 	detailsButtonContainer.className = "detailsButtonContainer";
 	if(entities[entityId].dependencies && entities[entityId].dependencies.length > 0){
 		//detailsButtonContainer += '<button id="details'+entityId+'" onclick="showDetails('+entityId+');">+</button>';
-		detailsButton = document.createElement("button");
-		detailsButton.innerHTML = "+";
-		detailsButton.addEventListener("click", function(e){
-			console.log(e);
-			console.log(entityId);
-		});
+		let detailsButton = document.createElement("button");
+		detailsButton.innerHTML = "▼";
+		detailsButton.className = "initial";
 		detailsButtonContainer.appendChild(detailsButton);
+		detailsButton.onclick = function(e){
+			if(e.target.className == "initial"){
+				let containerLineEl = e.target.parentElement.parentElement.getElementsByClassName("entityChildren")[0];
+				showDetails(entityId, containerLineEl);
+				containerLineEl.className = "entityChildren expanded";
+				detailsButton.className = "expanded";
+				detailsButton.innerHTML = "▲";
+				
+			} else if(e.target.className == "collapsed") {
+				let containerLineEl = e.target.parentElement.parentElement.getElementsByClassName("entityChildren")[0];
+				containerLineEl.className = "entityChildren expanded";
+				detailsButton.className = "expanded";
+				detailsButton.innerHTML = "▲";
+				
+			} else if(e.target.className == "expanded") {
+				let containerLineEl = e.target.parentElement.parentElement.getElementsByClassName("entityChildren")[0];
+				containerLineEl.className = "entityChildren collapsed";
+				detailsButton.className = "collapsed";
+				detailsButton.innerHTML = "▼";
+				
+			}
+		};
 	}
 	
 	lineEl.appendChild(detailsButtonContainer);
-	
+	lineEl.appendChild(lineContentEl);
+	lineEl.appendChild(lineChildrenContainer);
 	lineEl.className = "line line-data";
-	lineEl.innerHTML += line;
 	
 	return lineEl;
 }

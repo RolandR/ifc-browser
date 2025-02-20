@@ -6,6 +6,8 @@
 
 body{
 	font-family: monospace;
+	background-color: #333;
+	color: #eee;
 }
 
 #display{
@@ -19,17 +21,18 @@ p.line{
 }
 
 p.line-data{
-	background-color: rgba(0, 0, 0, 0.07);
+	background-color: rgba(50, 200, 255, 0.05);
 	margin: 5px 3px 10px 5px;
-	border: 1px rgba(0, 0, 0, 0.2) solid;
+	border: 1px rgba(50, 200, 255, 0.2) solid;
+	border-left: 5px rgba(50, 200, 255, 0.2) solid;
 }
 
 p.line-nodata{
-	color: #555;
+	color: #aaa;
 }
 
 p:target{
-	background-color: #ffa;
+	background-color: #552;
 }
 
 .detailsButtonContainer{
@@ -41,20 +44,26 @@ p:target{
 .detailsButtonContainer>button{
 	height: 20px;
 	width: 20px;
-	margin: 1px 5px 1px 0px;
-	border: 1px #444 solid;
-	background: linear-gradient(180deg, #eee 0%, #ccc 100%);
+	margin: 4px 0px 0px 2px;
+	border: none;
+	background: none;
 	cursor: pointer;
 	position: absolute;
 	display: inline-block;
+	color: #eee;
 }
 
 .detailsButtonContainer>button:hover{
-	background: linear-gradient(180deg, #fff 0%, #ddd 100%);
+	/*background: linear-gradient(180deg, #777 0%, #444 100%);*/
+	color: rgba(50, 200, 255, 1);
 }
 
 .detailsButtonContainer>button:active{
-	background: linear-gradient(0deg, #eee 0%, #ccc 100%);
+	/*background: linear-gradient(0deg, #444 0%, #222 100%);*/
+}
+
+.detailsButtonContainer>button.expanded{
+	color: rgba(255, 255, 255, 0.3);
 }
 
 p:hover .detailsButtonContainer>button{
@@ -79,7 +88,7 @@ p:hover .detailsButtonContainer>button{
 
 #details{
 	border: 1px #000 solid;
-	background-color: #fff;
+	background-color: #333;
 	flex: 1;
 	max-width: 800px;
 	margin: 100px;
@@ -89,4 +98,22 @@ p:hover .detailsButtonContainer>button{
 
 .parenContents{
 	margin-left: 25px;
+}
+
+a{
+	color: rgba(50, 200, 255, 1);
+	text-decoration: none;
+}
+
+a:hover{
+	text-decoration: underline;
+	
+}
+
+.entityChildren.collapsed{
+	display: none;
+}
+
+.entityChildren.expanded{
+	display: block;
 }
