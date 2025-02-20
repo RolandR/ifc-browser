@@ -4,97 +4,117 @@ const fileInput = document.getElementById("fileUpload");
 const detailsOverlay = document.getElementById("detailsOverlay");
 const detailsElement = document.getElementById("details");
 
-let data = [];
 let links = [];
 let entities = [];
 
 fileInput.onchange = function(e){
 	e.preventDefault();
 	
+	const loadingStatus = document.getElementById("loadingStatus");
+	const loadingContent = document.getElementById("loadingContent");
+	const loadingBar = document.getElementById("loadingBar");
+	
+	loadingStatus.className = "";
+	loadingBar.style.width = "0%";
+	loadingStatus.style.display = "block";
+	loadingContent.innerHTML = "Loading...<br>";
+	
 	const file = fileInput.files[0];
 	
 	const reader = new FileReader();
 	
-	console.log("blob");
+	reader.addEventListener("progress", function(e){
+		let progress = ~~((e.loaded/e.total)*60);
+		
+		loadingBar.style.width = progress+"%";
+	});
 	
 	reader.onload = function(){
+		
+		loadingContent.innerHTML += "<br>File uploaded, processing...";
+		loadingBar.style.width = "60%";
+		
+		
 		loadedString = reader.result;
 		
-		const lines = loadedString.split('\n');
-		
-		let isData = false;
-		
-		for(let i in lines){
-			if(isData){
-				if(lines[i].trim().toLowerCase() == "endsec;"){
-					isData = false;
-				}
-			}
-			
-			let line = lines[i];
-			
-			if(isData){
-				let lineParts = line.split("=");
-				let lineId = parseInt(lineParts[0].trim().replace("#", ""));
-				let lineEntity = lineParts[1];
-				
-				let entityName = lineEntity.substring(0, lineEntity.indexOf("(")).trim();
-				entityName = findEntityName(entityName);
-				
-				entities[lineId] = {
-					id: lineId,
-					name: entityName,
-					dependencies: [],
-					dependants: []
-				};
-				
-				let lineDependencies = lineParts[1].match(/#\d+/g);
-				for(var d in lineDependencies){
-					let dependency = parseInt(lineDependencies[d].trim().replace("#", ""));
-					links.push([lineId, dependency]);
-					entities[lineId].dependencies.push(dependency);
-				}
-				
-				data[lineId] = lineParts[1];
-				
-				let lineEl = createLineElement(lineId);
-				lineEl.id = lineId;
-				displayElement.appendChild(lineEl);
-			} else {
-				let lineEl = document.createElement("p");
-				lineEl.className = "line line-nodata";
-				lineEl.innerHTML = line;
-				displayElement.appendChild(lineEl);
-			}
-			
-			if(!isData){
-				if(lines[i].trim().toLowerCase() == "data;"){
-					isData = true;
-				}
-			}
-		}
-		
-		
-		updateDependants();
+		setTimeout(function(){processText(loadedString);}, 200);
 	}
 	
 	setTimeout(function(){reader.readAsText(file);}, 100);
 }
 
-/*function showDetails(id){
-	detailsOverlay.className = "visible";
+function processText(inputText){
+	const lines = inputText.split('\n');
+		
+	let isData = false;
 	
-	let entity = data[id];
+	for(let i in lines){
+		
+		if(isData){
+			if(lines[i].trim().toLowerCase() == "endsec;"){
+				isData = false;
+			}
+		}
+		
+		let line = lines[i];
+		
+		if(isData){
+			let lineId = parseInt(line.substring(0, line.indexOf("=")).trim().replace("#", ""));
+			let lineEntity = line.substring(line.indexOf("=")+1).trim();
+			
+			let entityName = lineEntity.substring(0, lineEntity.indexOf("(")).trim();
+			entityName = findEntityName(entityName);
+			
+			let entityContent = lineEntity.substring(lineEntity.indexOf("(")).trim();
+			
+			entities[lineId] = {
+				id: lineId,
+				name: entityName,
+				dependencies: [],
+				dependants: [],
+				content: entityContent
+			};
+			
+			let lineDependencies = lineEntity.match(/#\d+/g);
+			for(var d in lineDependencies){
+				let dependency = parseInt(lineDependencies[d].trim().replace("#", ""));
+				links.push([lineId, dependency]);
+				entities[lineId].dependencies.push(dependency);
+			}
+			
+			let lineEl = createLineElement(lineId);
+			lineEl.id = lineId;
+			displayElement.appendChild(lineEl);
+		} else {
+			let lineEl = document.createElement("p");
+			lineEl.className = "line line-nodata";
+			lineEl.innerHTML = line;
+			displayElement.appendChild(lineEl);
+		}
+		
+		if(!isData){
+			if(lines[i].trim().toLowerCase() == "data;"){
+				isData = true;
+			}
+		}
+	}
 	
-	let entityName = entity.substring(0, entity.indexOf("(")).trim();
-	entityName = findEntityName(entityName);
+	loadingContent.innerHTML += "<br>Updating dependencies...";
+	loadingBar.style.width = "95%";
 	
-	let parenContents = entity.substring(entity.indexOf("(")+1, entity.lastIndexOf(")"));
-	parenContents = parenContents.replace(/,/g, ",<br>");
+	updateDependants();
+	
+	loadingBar.style.width = "100%";
+	loadingContent.innerHTML += "<br>Ready!";
 	
 	
-	detailsElement.innerHTML = '<h2>#'+id+'</h2>'+entityName+'(<br><div class="parenContents">'+parenContents+'</div>)';
-}*/
+	setTimeout(function(){
+		loadingStatus.className = "fading";
+		setTimeout(function(){
+			loadingStatus.style.display = "none";
+		}, 500);
+	}, 100);
+}
 
 function showDetails(id, container){
 	for(let i in entities[id].dependencies){
@@ -107,7 +127,7 @@ function showDetails(id, container){
 function createLineElement(entityId){
 	let lineEl = document.createElement("p");
 	let lineAnchor = '<a href="#'+entityId+'">#'+entityId+'</a>';
-	let line = lineAnchor + "=" + entities[entityId].name;
+	let line = lineAnchor + '=<span class="entityName">' + entities[entityId].name +'</span>'+ entities[entityId].content;
 	let lineContentEl = document.createElement("span");
 	lineContentEl.innerHTML = line;
 	let lineChildrenContainer = document.createElement("div");
